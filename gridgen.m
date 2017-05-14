@@ -1,7 +1,7 @@
 clear all, clc
 
-fnx = 50;  %size of xi-axis grid sys
-fny = 100; %size of eta-axis grid sys
+fnx = 10;  %size of xi-axis grid sys
+fny = 20; %size of eta-axis grid sys
 radi1 = 1.0; %radius of target
 strch = 1.03;
 arad = 3.0;
@@ -46,4 +46,5 @@ for j = 1:jmax
     y(imax,j) = y(imax,1) + yleng*(num/den);
 end
 
+% plotting on 2d plane %
 mesh(x,y,z)
