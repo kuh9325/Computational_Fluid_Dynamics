@@ -1,11 +1,11 @@
 clear all, clc
 
-step = 5;
-cfl = 1;
+step = 10;
+cfl = -0.3;
 a = 340;
-dx = 0.5;
+dx = 0.02;
 dt = cfl*dx/a;
-xmax = 10;
+xmax = 5;
 imax = (xmax/dx)+1;
 jmax = step+1;
 
@@ -66,7 +66,7 @@ end
 %% using midpoint leapfrog method
 u5=u;
 for j = 2:step
-    u5(:,2) = u5(:,1);
+    u5(:,2) = u4(:,2);
     for i = 2:imax-1
         u5(i,j+1) = u5(i,j-1) - cfl*(u5(i+1,j) - u5(i-1,j));
     end
@@ -79,37 +79,37 @@ b6 = cfl/2;
 c6 = -u6;
 d6 = -1;
 
-A6 = zeros(imax-2,step-1);
+KC6 = zeros(imax-2,step-1);
 for i = 1:imax-2
     for j = 1:imax-2
         if i == j
-            A6(i,j) = d6;
+            KC6(i,j) = d6;
         elseif i+1 == j
-            A6(i,j) = a6;
+            KC6(i,j) = a6;
         elseif i-1 == j
-            A6(i,j) = b6;
+            KC6(i,j) = b6;
         else
-            A6(i,j) = 0;
+            KC6(i,j) = 0;
         end
     end
 end
 
-C6 = zeros(imax-2,step);
+KV6 = zeros(imax-2,step);
 for j = 1:step
     for i = 2:imax-1
         if i == 2
-            C6(i-1,j) = c6(i,j) - b6*u6(i-1,j+1);
+            KV6(i-1,j) = c6(i,j) - b6*u6(i-1,j+1);
         elseif i == imax-1
-            C6(i-1,j) = c6(i,j) - a6*u6(i+1,j+1);
+            KV6(i-1,j) = c6(i,j) - a6*u6(i+1,j+1);
         else
-            C6(i-1,j) = c6(i,j);
+            KV6(i-1,j) = c6(i,j);
         end
     end
     
-    U = A6\C6;
+    UK6 = KC6\KV6;
     
     for i = 2:imax-1
-        u6(i,j+1) = U(i-1,j);
+        u6(i,j+1) = UK6(i-1,j);
         c6(i,j+1) = -u6(i,j+1);
     end
 end
@@ -118,47 +118,56 @@ end
 u7=u;
 a7 = cfl/4;
 b7 = -cfl/4;
+c7=zeros(imax,jmax);
 d7 = 1;
 
-A7 = zeros(imax-2,step-1);
+KC7 = zeros(imax-2,step-1);
 for i = 1:imax-2
     for j = 1:imax-2
         if i == j
-            A7(i,j) = d7;
+            KC7(i,j) = d7;
         elseif i+1 == j
-            A7(i,j) = a7;
+            KC7(i,j) = a7;
         elseif i-1 == j
-            A7(i,j) = b7;
+            KC7(i,j) = b7;
         else
-            A7(i,j) = 0;
+            KC7(i,j) = 0;
         end
     end
 end
 
-C7 = zeros(imax-2,step);
+KV7 = zeros(imax-2,step);
 for j = 1:step
     for i = 2:imax-1
         if i == 2
-            C7(i-1,j) = u7(i,j) + b7*(u7(i+1,j)...
-                - u7(i-1,j)) - b7*u7(i-1,j+1);
+            KV7(i-1,j) = u7(i,j) + b7*(u7(i+1,j) - u7(i-1,j)) - b7*u7(i-1,j+1);
         elseif i == imax-1
-            C7(i-1,j) = u7(i,j) + b7*(u7(i+1,j)...
-                - u7(i-1,j)) - a7*u7(i+1,j+1);
+            KV7(i-1,j) = u7(i,j) + b7*(u7(i+1,j) - u7(i-1,j)) - a7*u7(i+1,j+1);
         else
-            C7(i-1,j) = u7(i,j) + b7*(u7(i+1,j) - u7(i-1,j));
+            KV7(i-1,j) = u7(i,j) + b7*(u7(i+1,j) - u7(i-1,j));
         end
     end
     
-    U7 = A7\C7;
+    UK7 = KC7\KV7;
     
     for i = 2:imax-1
-        u7(i,j+1) = U7(i-1,j);
-        c6(i,j+1) = u7(i,j+1) + b6*(u7(i+1,j+1) - u7(i-1,j+1));
+        u7(i,j+1) = UK7(i-1,j);
+        c7(i,j+1) = u7(i,j+1) + b7*(u7(i+1,j+1) - u7(i-1,j+1));
     end
- 
 end
 
-plot(x,u(:,1))
+%% using custom method
+u8=u;
+for j = 2:step
+    u8(:,2) = u4(:,2);
+    for i = 2:imax-1
+        u8(i,j+1) = -1*u8(i,j-1) +2*u8(i,j)...
+            -1*(cfl*dt/dx)*(u8(i+1,j) -2*u8(i,j) + u8(i-1,j));
+    end
+end
+
+%% plotting
+%plot(x,u(:,1))
 %plot(x,u1)
 %plot(x,u2)
 %plot(x,u3)
@@ -166,5 +175,6 @@ plot(x,u(:,1))
 %plot(x,u5)
 %plot(x,u6)
 %plot(x,u7)
-xlim([0 10])
+plot(x,u8)
+xlim([0 3.5])
 ylim([0 11])
