@@ -67,7 +67,7 @@ tmp(imax, :) = 0;
 % ADI_J_yx(tmp,beta,tol,x,y,k,imax,jmax,kmax);
 
 %% using ADI Over-Relaxation method: Jacobi (x -> y)
-% ADIOR_J_xy(tmp,beta,tol,x,y,k,imax,jmax,kmax);
+ADIOR_J_xy(tmp,beta,tol,x,y,k,imax,jmax,kmax);
 
 %% using ADI Over-Relaxation method: Jacobi (y -> x)
 % ADIOR_J_yx(tmp,beta,tol,x,y,k,imax,jmax,kmax);

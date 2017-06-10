@@ -1,99 +1,63 @@
 clear all, clc
 
-cl = zeros(20,4);
-cd = zeros(20,4);
-for k = 1:4
-    for j = 1:20 % -4~15
-        num = j-5;
-        address=sprintf('/Users/alexiankim/Downloads/coeff/%d/%d/coefhist000.rlt',k,num);
-        fid=fopen(address,'r');
-        for i=1:2
-            buffer=fgetl(fid);
-        end
-        [a, b]=fscanf(fid,'%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f%f',[16 450]);
-%         [log, cnt]=fscanf(fid,' Total lift coefficient   =   %f      Total drag coefficient   = %f Total moment coefficient =  %f',[3 inf]);
+aoa = -20:20; %angle of attack
+% remove data after stall angle
+info = {'NACA-1408','NACA-2414','NACA-4412','NACA-6409';...
+    '12:31','6:36','9:35','11:34'};
+value = ...
+    ' Total lift coefficient   =   %f      Total drag coefficient   = %f Total moment coefficient =  %f';
+cl = zeros(41,4);
+cd = zeros(41,4);
+cm = zeros(41,4);
+ld = zeros(41,4); % lift/drag ratio
+for k = 1:4 % four kind of NACA 4 digits (extract from info)
+    for j = 1:41 % -20~20
+        num = j-21;
+        path = sprintf(['/Users/alexiankim/Downloads/coeff/',...
+            char(info(1,k)),'/',num2str(num),'/force_com.dat']);
+        fid = fopen(path,'r');
+        [log,cnt] = fscanf(fid,value,[3 inf]);
         fclose(fid);
-        cl(j,k)=sum(a(2,400:450))/51;
-        cd(j,k)=sum(a(3,400:450))/51;
+        cl(j,k)=log(1);
+        cd(j,k)=log(2);
+        cm(j,k)=log(3);
     end
 end
 
-aoa = -4:15; %angle of attack
-
-
-ld = zeros(20,4);
-for i = 1:20
+for i = 1:41
     for j = 1:4
         ld(i,j) = cl(i,j)/-cd(i,j);
     end
 end
 
-plot(cd(:,1),cl(:,1),'o-')
-
-figure(1)
-plot(aoa,cl(:,1),'o-')
-title('NACA-1408: lift coefficient versus AOA');
-xlabel({'angle of attack (\circ)'});
-ylabel({'c_{L}'});
-
-figure(2)
-plot(aoa,cd(:,1),'o-')
-title('NACA-1408: drag coefficient versus AOA');
-xlabel({'angle of attack (\circ)'});
-ylabel({'c_{D}'});
-
-figure(3)
-plot(aoa,cl(:,2),'o-')
-title('NACA-2414: lift coefficient versus AOA');
-xlabel({'angle of attack (\circ)'});
-ylabel({'c_{L}'});
-
-figure(4)
-plot(aoa,cd(:,2),'o-')
-title('NACA-2414: drag coefficient versus AOA');
-xlabel({'angle of attack (\circ)'});
-ylabel({'c_{D}'});
-
-figure(5)
-plot(aoa,cl(:,3),'o-')
-title('NACA-4412: lift coefficient versus AOA');
-xlabel({'angle of attack (\circ)'});
-ylabel({'c_{L}'});
-
-figure(6)
-plot(aoa,cd(:,3),'o-')
-title('NACA-4412: drag coefficient versus AOA');
-xlabel({'angle of attack (\circ)'});
-ylabel({'c_{D}'});
-
-figure(7)
-plot(aoa,cl(:,4),'o-')
-title('NACA-6409: lift coefficient versus AOA');
-xlabel({'angle of attack (\circ)'});
-ylabel({'c_{L}'});
-
-figure(8)
-plot(aoa,cd(:,4),'o-')
-title('NACA-6409: drag coefficient versus AOA');
-xlabel({'angle of attack (\circ)'});
-ylabel({'c_{D}'});
-
-figure(9)
-plot(aoa,ld(:,1),'o-')
-title('NACA-1408: lift/drag ratio versus AOA');
-xlabel({'angle of attack (\circ)'});
-
-figure(10)
-plot(aoa,ld(:,2),'o-')
-title('NACA-2414: lift/drag ratio versus AOA');
-xlabel({'angle of attack (\circ)'});
-
-figure(11)
-plot(aoa,ld(:,3),'o-')
-title('NACA-4412: lift/drag ratio versus AOA');
-xlabel({'angle of attack (\circ)'});
-
-figure(12)
-plot(aoa,ld(:,4),'o-')
-title('NACA-6409: lift/drag ratio versus AOA');
-xlabel({'angle of attack (\circ)'});
+for i = 1:4
+    figure(i)
+    refine = str2num(char(info(2,i)));
+    plot(aoa(refine),cl(refine,i),'o-')
+    title([char(info(1,i)),': lift coefficient versus AOA']);
+    xlabel({'angle of attack (\circ)'});
+    ylabel({'c_{L}'});
+end
+for i = 1:4
+    figure(i+4)
+    refine = str2num(char(info(2,i)));
+    plot(aoa(refine),cd(refine,i),'o-')
+    title([char(info(1,i)),': drag coefficient versus AOA']);
+    xlabel({'angle of attack (\circ)'});
+    ylabel({'c_{D}'});
+end
+for i = 1:4
+    figure(i+8)
+    refine = str2num(char(info(2,i)));
+    plot(cd(refine,i),cl(refine,i),'o-')
+    title([char(info(1,i)),': lift coeff versus drag coeff']);
+    xlabel({'c_{D}'});
+    ylabel({'c_{L}'});
+end
+for i = 1:4
+    figure(i+12)
+    refine = str2num(char(info(2,i)));
+    plot(aoa(refine),ld(refine,i),'o-')
+    title([char(info(1,i)),': lift/drag ratio versus AOA']);
+    xlabel({'angle of attack (\circ)'});
+end
