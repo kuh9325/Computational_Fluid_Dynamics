@@ -8,9 +8,7 @@ value = ...
     [' Total lift coefficient   =   %f'...
     '      Total drag coefficient   = %f'...
     ' Total moment coefficient =  %f'];
-cl = zeros(41,4);
-cd = zeros(41,4);
-cm = zeros(41,4);
+cl = zeros(41,4); cd = zeros(41,4); cm = zeros(41,4);
 ld = zeros(41,4); % lift/drag ratio
 for k = 1:4 % four kind of NACA 4 digits (extract from info)
     for j = 1:41 % -20~20
@@ -20,9 +18,7 @@ for k = 1:4 % four kind of NACA 4 digits (extract from info)
         fid = fopen(path,'r');
         [log,cnt] = fscanf(fid,value,[3 inf]);
         fclose(fid);
-        cl(j,k)=log(1);
-        cd(j,k)=log(2);
-        cm(j,k)=log(3);
+        cl(j,k)=log(1); cd(j,k)=log(2); cm(j,k)=log(3);
     end
 end
 

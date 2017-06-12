@@ -20,9 +20,11 @@ tmp(:,jmax) = 0;
 tmp(1,:) = 0;
 tmp(imax, :) = 0;
 
-
 %% plotting exact solution
 % exact(x,y,imax,jmax,L,H);
+
+%% using Direct method: Five-point formula
+% DFP(tmp,beta,x,y,imax,jmax)
 
 %% using Point Jacobi iteration method
 % PJi(tmp,beta,tol,x,y,k,imax,jmax,kmax);
@@ -67,7 +69,7 @@ tmp(imax, :) = 0;
 % ADI_J_yx(tmp,beta,tol,x,y,k,imax,jmax,kmax);
 
 %% using ADI Over-Relaxation method: Jacobi (x -> y)
-ADIOR_J_xy(tmp,beta,tol,x,y,k,imax,jmax,kmax);
+% ADIOR_J_xy(tmp,beta,tol,x,y,k,imax,jmax,kmax);
 
 %% using ADI Over-Relaxation method: Jacobi (y -> x)
 % ADIOR_J_yx(tmp,beta,tol,x,y,k,imax,jmax,kmax);
@@ -82,4 +84,4 @@ ADIOR_J_xy(tmp,beta,tol,x,y,k,imax,jmax,kmax);
 % ADIOR_GS_xy(tmp,beta,tol,x,y,k,imax,jmax,kmax);
 
 %% using ADI Over-Relaxation method: Gauss-Seidel (y -> x)
-ADIOR_GS_yx(tmp,beta,tol,x,y,k,imax,jmax,kmax);
+% ADIOR_GS_yx(tmp,beta,tol,x,y,k,imax,jmax,kmax);

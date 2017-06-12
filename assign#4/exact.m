@@ -2,19 +2,26 @@
 function exact(x,y,imax,jmax,L,H)
 
 syms n
-t = 100;
 iter = 0;
-t = zeros(imax,jmax);
+t1 = 100;
+tic;
 for j = 1:jmax
    for i = 1:imax
-       iter = iter + 1              % counting iteration step on real-time
+       iter = iter + 1;
        c1 = (1-(-1)^n)/(n*pi);
        c2 = (sinh(n*pi*(H-y(j))/L))/(sinh(n*pi*H/L));
        c3 = sin(n*pi*x(i)/L);
-       t(i,j) = double(2*t*symsum(c1*c2*c3,n,1,50));
+       ntmp(i,j) = double(2*t1*symsum(c1*c2*c3,n,1,50));
    end   
 end
-T = t';
+t = toc;
+T = ntmp';
+
+fprintf('\n@@ analytical exact solution @@\n')
+fprintf('Number of iterations = \t %8.0f \nCalculation time =%12.0f sec \n',iter,t)
+txt = fopen('exact.txt','w');
+fprintf(Errtxt, '%d     %d \n', [iter; t]);
+
 contour(x,y,T,'Showtext','on')
 grid on
 xlabel('x');
